@@ -14,24 +14,45 @@ const {HoldingModel} = require('./model/HoldingModel'); // Importing Holdings mo
 const {PositionModel} = require('./model/PositionModel'); // Importing Positions model
 const {OrdersModel} = require('./model/OrdersModel');
 
-const allowedOrigins = [
-  "http://localhost:5173", // Login/Signup frontend
-  "http://localhost:5174", // Dashboard frontend
-];
+const allowedOrigins = process.env.NODE_ENV === 'production'
+    ? [
+        process.env.FRONTEND_URL, // e.g., https://your-frontend.onrender.com
+        process.env.DASHBOARD_URL  // e.g., https://your-dashboard.onrender.com
+      ].filter(Boolean) // Filter out any undefined values if env vars are not set
+    : [
+        "http://localhost:5173", // Login/Signup frontend
+        "http://localhost:5174", // Dashboard frontend
+        "http://localhost:3000", // Common React dev server port
+        "http://localhost:8080" // If backend serves static files during dev
+      ];
 
 app.use(
-  cors({
-    origin: function (origin, callback) {
-      // allow requests with no origin (like Postman or curl)
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      } else {
-        return callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-  })
+    cors({
+        origin: function (origin, callback) {
+            // Allow requests with no origin (like Postman or curl, or same-origin requests)
+            if (!origin) return callback(null, true);
+
+            // For production, check if the origin is explicitly allowed
+            if (process.env.NODE_ENV === 'production') {
+                if (allowedOrigins.includes(origin)) {
+                    return callback(null, true);
+                } else {
+                    console.log(`CORS blocked for origin: ${origin}`); // Log for debugging
+                    return callback(new Error("Not allowed by CORS"));
+                }
+            } else {
+                // In development, allow all origins for flexibility, or keep strict localhost check
+                // For more flexibility in dev, you could use `callback(null, true)` here
+                if (allowedOrigins.includes(origin)) {
+                    return callback(null, true);
+                } else {
+                     console.log(`CORS blocked for origin: ${origin} (Dev environment)`);
+                     return callback(new Error("Not allowed by CORS - Dev Environment"));
+                }
+            }
+        },
+        credentials: true,
+    })
 );
 app.use(bodyParser.json());
 app.use(cookieParser());
