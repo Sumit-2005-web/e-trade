@@ -35,7 +35,7 @@ const Signup = () => {
     e.preventDefault();
     try {
       const { data } = await axios.post(
-        "http://localhost:8080/signup",
+        "https://e-trade-n953.onrender.com/signup",
         {
           ...inputValue,
         },
