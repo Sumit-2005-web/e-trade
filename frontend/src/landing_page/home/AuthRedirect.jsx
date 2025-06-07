@@ -17,14 +17,14 @@ const AuthRedirect = () => {
 
       try {
         const { data } = await axios.post(
-          "http://localhost:8080", // AuthMiddleware
+          "https://e-trade-n953.onrender.com", // AuthMiddleware
           {},
           { withCredentials: true }
         );
 
         if (data.status) {
           // Redirect to dashboard
-          window.location.href = "http://localhost:5174"; // or actual dashboard URL
+          window.location.href = "https://e-trade-1-qp0j.onrender.com"; // or actual dashboard URL
         } else {
           navigate("/login");
         }
