@@ -33,7 +33,7 @@ const Login = () => {
     e.preventDefault();
     try {
       const { data } = await axios.post(
-        "http://localhost:8080/login",
+        "https://e-trade-n953.onrender.com/login",
         {
           ...inputValue,
         },
